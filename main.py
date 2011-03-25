@@ -14,6 +14,7 @@ _MAX_TENTATIVE = 1000
 _ROOT_URL = 'http://b-i-m-al.appspot.com'
 
 class UrlStore(db.Model):
+    """model for the store which will have short url, long url and the creation time"""
     short_url_key = db.StringProperty(required=True)
     long_url = db.LinkProperty(required=True)
     creation_date = db.DateTimeProperty()
@@ -22,6 +23,8 @@ def _random_id(length=10):
     return ''.join([choice(_CHARS) for i in range(length)])
 
 def _generate_short_url( long_url_value ):
+    """ Generate the short url from the original url.
+    First check if the url present in the memcache if not check in the model store and again that fails, create one."""
     short_url_id = memcache.get(long_url_value)
     if short_url_id is not None:
         return '%s/%s' % (_ROOT_URL, short_url_id)
@@ -45,6 +48,8 @@ def _generate_short_url( long_url_value ):
         tentatives += 1
 
 class Url(webapp.RequestHandler):
+    """GET request processor when the short url is accessed, check if in memcached if not in model store and redirect
+    to original url otherwise a 404 error """
     def get(self, url):
         url = url.strip()
         long_url_id = memcache.get(url)
@@ -60,17 +65,15 @@ class Url(webapp.RequestHandler):
             self.response.out.write("Not found")
 
 class Home(webapp.RequestHandler):        
-
+    """ Home page of the website"""
     def get(self):
-        """Returns a long url corresponding to the short one"""
-        
         template_values = {}
         path = os.path.join(os.path.dirname(__file__), 'template/index.html')
         self.response.out.write(template.render(path, template_values))
 
 class Shortner(webapp.RequestHandler):
     def post( self ):
-        """Creates and store a short url."""
+        """Creates, store a short url and return json result back"""
         
         url = self.request.get('longurl').strip()
         short_url = _generate_short_url( url )
@@ -79,7 +82,7 @@ class Shortner(webapp.RequestHandler):
         self.response.out.write(json.dumps(return_context))
 
 
-
+"""Url definitions"""
 application = webapp.WSGIApplication(
     [('/', Home),
      ('/shorten/', Shortner),
