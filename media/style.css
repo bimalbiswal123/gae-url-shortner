@@ -1,0 +1,13 @@
+body {
+    margin: 0;
+    padding: 0;
+    background: #EBF5FF;
+    font-family: Lucida Grande,Arial,Helvetica,sans-serif;
+}
+
+.mainUnAuthShortenContainerInner {
+    margin-left: 30%;
+    margin-top: 200px;
+    padding: 5px;
+    float: left;
+}

@@ -1,0 +1,67 @@
+<html>
+<head>
+<link rel="stylesheet" type="text/css" href="media/style.css">
+<script type="text/javascript" src="media/jquery-1.5.1.min.js"></script>
+<script type="text/javascript" src="media/ZeroClipboard.js"></script>
+</head>
+<body>
+<div class="mainUnAuthShortenContainerInner" id="mainSearchContainerInner">
+<div class="formActionContainer">
+<form id="unAuthShortenForm" name="shortenUrl" method="POST" action="/">
+<div class="shortenUnAuthBox">
+<div class="inputBoxContainer" id="mainUnAuthShortenContainer">
+<input type="text" value="" size="70" name="longurl" id="longurl" tabindex="1" class="default">&nbsp;&nbsp;&nbsp;<input type="button" value="Shorten" name="searchButton" id="searchButton" class="submitButtonBackground white_button">
+</div>
+
+
+</div>
+
+</form></div>
+<div id="result" name="result"></div>
+</div>
+<script>
+
+function post_form(){
+formdata = {
+'longurl': $('#longurl').val()
+}
+$.ajax({
+type: 'POST',
+url: '/shorten/',
+data: formdata,
+dataType: 'json',
+error: function(xhr) {					
+           alert("Oops.. something blewup, please try again!");
+       },
+success: function(data) {
+            $("#resulttable").remove();
+            
+            $('#result').append('<table id="resulttable"><tr><td id="shorturlresult">'+data.short_url+'</td></tr></table>')
+         }
+})
+}
+$('#searchButton').click(function() {
+    post_form();
+})
+
+function copyToClipboard()
+{
+    ZeroClipboard.setMoviePath( 'http://b-i-m-al.appspot.com/media/ZeroClipboard.swf' );
+    ZeroClipboard.setMoviePath( 'http://b-i-m-al.appspot.com/media/ZeroClipboard10.swf' );
+    var clip = new ZeroClipboard.Client();
+    clip.setText( $('#shorturlresult').html() );
+    /*text = $('#shorturlresult').html();
+    if (window.clipboardData) // IE
+    {  
+        window.clipboardData.setData("Text", text);
+    }
+    else
+    {  
+        unsafeWindow.netscape.security.PrivilegeManager.enablePrivilege("UniversalXPConnect");  
+        const clipboardHelper = Components.classes["@mozilla.org/widget/clipboardhelper;1"].getService(Components.interfaces.nsIClipboardHelper);  
+        clipboardHelper.copyString(text);
+    }*/
+}
+</script>
+</body>
+</html>
